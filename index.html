@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Klinik Asistan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Diş kliniklerinin Instagram mesajlarına 7/24 cevap veren, randevu talebi toplayan asistan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Concept "Gece vardiyası": a night-sky page (single dark look, by choice). Animated aurora behind a 3D phone that runs a live DM,
+   then a scrolling question marquee, a sticky scroll story, spotlight bento, and a glowing price card. */
+@property --ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+:root{
+  --bg:#060a13; --bg2:#0b1120; --card:#0f1628; --card2:#131c33; --line:#1d2840; --line2:#2a3858;
+  --ink:#eef3fb; --muted:#8e9bb5; --dim:#5f6b85;
+  --ice:#7fe3ff; --mint:#5ef0b8; --indigo:#6b74ff; --coral:#ff9a7a;
+  --display:"Sora", "Segoe UI", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;margin:0;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.06;text-wrap:balance;font-weight:600}
+h1{font-size:clamp(2.4rem,6.4vw,4.6rem);letter-spacing:-.045em}
+h2{font-size:clamp(1.8rem,4.2vw,3rem);letter-spacing:-.035em}
+h3{font-size:1.12rem;letter-spacing:-.015em}
+p{margin:0}
+:focus-visible{outline:2px solid var(--ice);outline-offset:3px;border-radius:8px}
+.grad{background:linear-gradient(100deg,var(--ice),var(--mint) 45%,var(--ice) 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ice)}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(6,10,19,.66);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:600;font-size:1.08rem}
+.navl{display:flex;align-items:center;gap:26px}
+.navl a{color:var(--muted);text-decoration:none;font-size:.94rem;transition:color .2s}
+.navl a:hover{color:var(--ink)}
+.navl a.btn{color:var(--bg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border-radius:999px;font-weight:600;font-size:1rem;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease,background .25s}
+.btn-w{background:var(--ink);color:var(--bg)}
+.btn-w:hover{transform:translateY(-2px);box-shadow:0 12px 40px -10px rgba(127,227,255,.55)}
+.btn-g{color:var(--ink);border:1px solid var(--line2);background:rgba(255,255,255,.02)}
+.btn-g:hover{border-color:var(--ice)}
+.btn-sm{padding:9px 18px;font-size:.9rem}
+.btn .arr{transition:transform .25s}
+.btn:hover .arr{transform:translateX(4px)}
+@media (max-width:700px){.navl a:not(.btn){display:none}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;isolation:isolate}
+#aurora{position:absolute;inset:0;width:100%;height:100%;z-index:-2;filter:blur(40px);opacity:.75}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:
+  radial-gradient(ellipse at 50% 120%,var(--bg) 30%,transparent 70%),
+  linear-gradient(transparent 60%,var(--bg));pointer-events:none}
+.stars{position:absolute;inset:0;z-index:-1;background-image:radial-gradient(1px 1px at 12% 22%,#fff8,transparent),radial-gradient(1px 1px at 72% 12%,#fff6,transparent),radial-gradient(1.5px 1.5px at 88% 40%,#fff7,transparent),radial-gradient(1px 1px at 34% 8%,#fff5,transparent),radial-gradient(1px 1px at 55% 30%,#fff4,transparent),radial-gradient(1px 1px at 6% 60%,#fff5,transparent)}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding-block:56px 80px}
+.hero-copy{display:flex;flex-direction:column;gap:26px;min-width:0}
+.live{display:inline-flex;align-self:flex-start;align-items:center;gap:10px;padding:7px 14px 7px 10px;border-radius:999px;border:1px solid var(--line2);background:rgba(15,22,40,.6);font-size:.86rem;color:var(--muted)}
+.live b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 rgba(94,240,184,.6);animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px rgba(94,240,184,0)}100%{box-shadow:0 0 0 0 rgba(94,240,184,0)}}
+.lead{font-size:1.15rem;color:var(--muted);max-width:31em}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--muted);font-size:.92rem}
+.trust span{display:flex;align-items:center;gap:8px}
+.trust span::before{content:"";width:16px;height:16px;border-radius:50%;background:rgba(94,240,184,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.3l2.2 2.2 4.8-5' fill='none' stroke='%235ef0b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* phone */
+.stage{perspective:1400px;display:grid;place-items:center;min-width:0}
+.phone{width:min(290px,100%);aspect-ratio:9/18;max-width:100%;border-radius:44px;padding:12px;background:linear-gradient(145deg,#2a3654,#0d1324 40%,#1c2640);box-shadow:0 60px 120px -40px rgba(107,116,255,.55),0 0 0 1px #34416388 inset;transform:rotateY(-14deg) rotateX(6deg) rotateZ(1deg);transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1);position:relative}
+.screen{height:100%;border-radius:34px;background:#0a0f1c;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.sbar{display:flex;justify-content:space-between;padding:12px 22px 6px;font-size:.74rem;font-weight:600;font-variant-numeric:tabular-nums}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:90px;height:24px;border-radius:20px;background:#000}
+.chead{display:flex;align-items:center;gap:10px;padding:10px 16px 12px;border-bottom:1px solid #1a2238}
+.cav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ice),var(--indigo));display:grid;place-items:center;flex:none}
+.chead b{display:block;font-size:.84rem}
+.chead span{font-size:.7rem;color:var(--mint)}
+.chat{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:7px;padding:12px 12px 16px;font-size:.8rem;overflow:hidden}
+.m{max-width:84%;padding:8px 12px;border-radius:18px;line-height:1.4;animation:pop .35s cubic-bezier(.2,.8,.3,1.2) both}
+.m.in{background:#1b2338;align-self:flex-start;border-bottom-left-radius:6px}
+.m.out{background:linear-gradient(135deg,#5865ff,#7a5cff);align-self:flex-end;border-bottom-right-radius:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;animation:pop .35s both}
+.chip{border:1px solid #6b74ff;color:#c9cdff;border-radius:999px;padding:4px 10px;font-size:.72rem;transition:background .2s}
+.chip.on{background:#6b74ff;color:#fff}
+.typing{align-self:flex-end;background:#1b2338;border-radius:16px;padding:10px 12px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#8e9bb5;animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+@keyframes pop{from{transform:translateY(10px) scale(.96)}to{transform:none}}
+.toast{position:absolute;left:10px;right:10px;top:44px;background:rgba(20,28,48,.92);backdrop-filter:blur(10px);border:1px solid #2c3a5c;border-radius:18px;padding:11px 13px;display:flex;gap:10px;align-items:center;transform:translateY(-220%);opacity:0;transition:transform .6s cubic-bezier(.2,.8,.2,1.1),opacity .4s;z-index:3}
+.toast.show{transform:none;opacity:1}
+.toast .ti{width:32px;height:32px;border-radius:10px;background:rgba(94,240,184,.16);display:grid;place-items:center;flex:none}
+.toast b{display:block;font-size:.76rem}
+.toast span{display:block;font-size:.72rem;color:var(--muted)}
+.float{position:absolute;background:rgba(15,22,40,.85);border:1px solid var(--line2);backdrop-filter:blur(8px);border-radius:16px;padding:10px 14px;font-size:.8rem;box-shadow:0 20px 40px -20px #000;animation:bob 6s ease-in-out infinite}
+.float b{display:block;font-family:var(--display);font-size:1.25rem;line-height:1.1}
+.float span{color:var(--muted)}
+.f1{left:-34px;top:22%;transform:translateZ(60px)}
+.f2{right:-56px;bottom:8%;animation-delay:-3s}
+@keyframes bob{50%{translate:0 -10px}}
+@media (max-width:900px){.f1{left:-8px}.f2{right:-8px}}
+
+/* marquee */
+.marq{padding-block:28px 64px;display:flex;flex-direction:column;gap:14px;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);overflow:hidden}
+.marq-label{text-align:center;color:var(--dim);font-size:.85rem;margin-bottom:6px}
+.track{display:flex;gap:12px;width:max-content;animation:slide 48s linear infinite}
+.track.rev{animation-direction:reverse;animation-duration:56s}
+.marq:hover .track{animation-play-state:paused}
+.q{white-space:nowrap;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:#c3cbe0;font-size:.95rem}
+.q em{font-style:normal;color:var(--dim);font-size:.8rem;margin-left:8px;font-variant-numeric:tabular-nums}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* stats */
+.stats{padding-block:32px 96px}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.stat{background:var(--bg2);padding:28px 24px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.stat b{font-family:var(--display);font-size:clamp(2rem,4vw,2.8rem);font-weight:600;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.92rem}
+
+/* scroll story */
+.story{padding-block:40px 110px}
+.story-head{display:flex;flex-direction:column;gap:14px;max-width:36em;margin-bottom:56px}
+.story-head p{color:var(--muted);font-size:1.08rem}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px}
+.sticky{position:sticky;top:120px;align-self:start;height:420px;border-radius:28px;border:1px solid var(--line);background:radial-gradient(circle at 30% 20%,rgba(107,116,255,.22),transparent 60%),radial-gradient(circle at 80% 90%,rgba(94,240,184,.14),transparent 55%),var(--bg2);overflow:hidden;min-width:0}
+.scene{position:absolute;inset:0;display:grid;place-items:center;padding:28px;opacity:0;transform:scale(.96) translateY(14px);transition:opacity .6s,transform .6s}
+.scene.on{opacity:1;transform:none}
+.scene .box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
+.mini{background:var(--card2);border:1px solid var(--line2);border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:.9rem}
+.mini span{color:var(--muted);font-size:.8rem}
+.pill{align-self:center;font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(94,240,184,.14);color:var(--mint);white-space:nowrap}
+.pill.blue{background:rgba(127,227,255,.14);color:var(--ice)}
+.steps{display:flex;flex-direction:column}
+.st{min-height:62vh;display:flex;flex-direction:column;justify-content:center;gap:14px;padding-left:28px;border-left:1px solid var(--line);position:relative;transition:opacity .4s}
+.st::before{content:"";position:absolute;left:-5px;top:50%;width:9px;height:9px;border-radius:50%;background:var(--line2);transition:background .3s,box-shadow .3s}
+.st.on::before{background:var(--ice);box-shadow:0 0 0 6px rgba(127,227,255,.15)}
+.st .n{font-family:var(--display);font-size:.85rem;color:var(--ice)}
+.st p{color:var(--muted);max-width:28em;font-size:1.04rem}
+.st:not(.on){opacity:.45}
+.st .inline{display:none}
+
+/* bento */
+.bento-sec{padding-block:40px 110px}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.b{grid-column:span 2;position:relative;border-radius:22px;border:1px solid var(--line);background:var(--card);padding:28px;display:flex;flex-direction:column;gap:10px;overflow:hidden;min-width:0;transition:transform .3s,border-color .3s}
+.b::before{content:"";position:absolute;inset:0;background:radial-gradient(380px circle at var(--x,50%) var(--y,0%),rgba(127,227,255,.13),transparent 45%);opacity:0;transition:opacity .3s;pointer-events:none}
+.b:hover{border-color:var(--line2);transform:translateY(-3px)}
+.b:hover::before{opacity:1}
+.b.w3{grid-column:span 3}
+.b p{color:var(--muted);font-size:.95rem}
+.ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(127,227,255,.18),rgba(107,116,255,.18));border:1px solid var(--line2);margin-bottom:6px}
+.clock{margin-top:auto;display:flex;gap:4px;align-items:flex-end;height:54px;padding-top:12px}
+.clock i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(var(--ice),var(--indigo));opacity:.75;animation:eq 2.4s ease-in-out infinite}
+@keyframes eq{50%{transform:scaleY(.55)}}
+.clock i{transform-origin:bottom}
+
+/* pricing */
+.price-sec{padding-block:40px 110px}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.price-copy{display:flex;flex-direction:column;gap:18px;min-width:0}
+.price-copy p{color:var(--muted);font-size:1.06rem}
+.calc{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.calc .row{display:flex;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line);color:var(--muted)}
+.calc .row b{color:var(--ink);font-variant-numeric:tabular-nums}
+.ring{position:relative;border-radius:28px;padding:1.5px;background:conic-gradient(from var(--ang),var(--line2),var(--ice),var(--indigo),var(--mint),var(--line2) 70%);animation:spin 6s linear infinite;min-width:0}
+@keyframes spin{to{--ang:360deg}}
+.pcard{border-radius:27px;background:linear-gradient(180deg,#111a30,#0b1120);padding:34px;display:flex;flex-direction:column;gap:20px}
+.ptop{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.offer{font-size:.78rem;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,154,122,.14);color:var(--coral)}
+.amt{font-family:var(--display);font-size:3.4rem;font-weight:600;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.amt small{font-family:var(--body);font-size:1rem;color:var(--muted);letter-spacing:0;font-weight:500}
+.plist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:20px}
+.plist li{display:flex;gap:12px;align-items:flex-start}
+.plist li::before{content:"";flex:none;width:18px;height:18px;margin-top:3px;border-radius:50%;background:rgba(94,240,184,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.3l2.2 2.2 4.8-5' fill='none' stroke='%235ef0b8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.pcard .btn{width:100%}
+
+/* faq */
+.faq-sec{padding-block:20px 110px}
+.faq{max-width:800px;margin-top:36px}
+details{border-bottom:1px solid var(--line);padding-block:20px}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;font-weight:600;font-size:1.05rem}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";color:var(--ice);font-size:1.4rem;line-height:1;transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:12px;max-width:44em}
+
+/* final */
+.final{position:relative;overflow:hidden;padding-block:110px;text-align:center;border-top:1px solid var(--line)}
+.final::before{content:"";position:absolute;width:900px;height:900px;left:50%;top:40%;transform:translate(-50%,-10%);background:radial-gradient(circle,rgba(107,116,255,.28),transparent 60%);z-index:-1;pointer-events:none}
+.final{isolation:isolate}
+.final .wrap{display:flex;flex-direction:column;align-items:center;gap:22px}
+.final p{color:var(--muted);font-size:1.1rem;max-width:32em}
+.mailbox{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;align-items:center;padding:8px 8px 8px 20px;border-radius:999px;border:1px solid var(--line2);background:var(--bg2);max-width:100%}
+.mail{font-weight:500;user-select:all;word-break:break-all;min-width:0}
+button.copy{font:inherit;font-size:.9rem;font-weight:600;padding:10px 18px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+footer{border-top:1px solid var(--line);color:var(--dim);font-size:.85rem;padding-block:24px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+
+/* reveal (visible at rest; only moves) */
+.rv{transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.pre{transform:translateY(28px)}
+
+@media (max-width:900px){
+  .hero .wrap,.price-grid{grid-template-columns:1fr}
+    .phone{animation:sway 7s ease-in-out infinite;width:min(250px,72vw)}
+  .stage{order:-1}
+  .hero .wrap{padding-block:28px 64px;gap:36px}
+  .f1{left:-22px;top:16%}.f2{right:-22px;bottom:-3%}
+  .float{padding:7px 10px;font-size:.72rem}.float b{font-size:1rem}
+  .stats .wrap{grid-template-columns:1fr 1fr}
+  .story-grid{grid-template-columns:1fr;gap:0}
+  .sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);height:290px;z-index:5;margin-bottom:8px;box-shadow:0 24px 40px -20px var(--bg)}
+  .scene{padding:16px}
+  .scene .box{gap:8px}
+  .mini{padding:10px 12px;font-size:.82rem}
+  .st{min-height:60vh;padding-block:20px}
+  .bento{grid-template-columns:1fr 1fr}
+  .b,.b.w3{grid-column:span 1}
+}
+@media (max-width:560px){
+  .bento{grid-template-columns:1fr}
+  .stat{padding:22px 18px}
+  .pcard{padding:26px}
+}
+@keyframes sway{0%,100%{transform:rotateY(-14deg) rotateX(6deg)}50%{transform:rotateY(10deg) rotateX(2deg)}}
+@property --sx{syntax:"<percentage>";initial-value:0%;inherits:false}
+@media (hover:none){
+  .b::before{opacity:1;background:radial-gradient(260px circle at var(--sx) 0%,rgba(127,227,255,.16),transparent 55%);animation:sweep 5s ease-in-out infinite alternate}
+  .b:nth-child(2n)::before{animation-delay:-2.5s}
+}
+@keyframes sweep{from{--sx:0%}to{--sx:100%}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">
+      <svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fe3ff"/><stop offset="1" stop-color="#6b74ff"/></linearGradient></defs><rect width="30" height="30" rx="9" fill="url(#lg)"/><path d="M9.5 9.5c1.6-1.3 3.4-.9 5.5-.2 2.1-.7 3.9-1.1 5.5.2 1.5 1.3 1.2 3.7.6 5.8-.5 1.7-.9 4.9-2.2 5.2-1.4.3-1.4-3.6-3.9-3.6s-2.5 3.9-3.9 3.6c-1.3-.3-1.7-3.5-2.2-5.2-.6-2.1-.9-4.5.6-5.8z" fill="#060a13"/></svg>
+      Klinik Asistan
+    </a>
+    <nav class="navl">
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#ozellik">Özellikler</a>
+      <a href="#fiyat">Fiyat</a>
+      <a class="btn btn-w btn-sm" href="#iletisim">Ücretsiz dene</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <canvas id="aurora" aria-hidden="true"></canvas>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="live"><span class="dot"></span>Asistan şu an çevrimiçi · <b id="now">23:41</b></span>
+      <h1>Klinik kapanınca <span class="grad">asistanınız</span> mesaide.</h1>
+      <p class="lead">Instagram'dan yazan her hastaya saniyeler içinde cevap veren, sorularını yanıtlayan ve randevu talebini sabaha hazır eden dijital resepsiyon.</p>
+      <div class="ctas">
+        <a class="btn btn-w" href="https://ig.me/m/ornekdisklinigi.demo" target="_blank" rel="noopener">Demoyu Instagram'da dene <span class="arr">→</span></a>
+        <a class="btn btn-g" href="#nasil">Nasıl çalışır?</a>
+      </div>
+      <div class="trust"><span>2 hafta ücretsiz</span><span>Taahhüt yok</span><span>Kurulumu biz yapıyoruz</span></div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="phone" id="phone">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="sbar"><span id="pclock">23:41</span><span>●●● 5G</span></div>
+          <div class="toast" id="toast"><div class="ti"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="#5ef0b8" stroke-width="1.6"/><path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" stroke="#5ef0b8" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><b>Yeni randevu talebi</b><span>Ayşe K. · İmplant · 0532 ••• •• 18</span></div></div>
+          <div class="chead"><div class="cav"><svg width="16" height="16" viewBox="0 0 30 30" aria-hidden="true"><path d="M9.5 9.5c1.6-1.3 3.4-.9 5.5-.2 2.1-.7 3.9-1.1 5.5.2 1.5 1.3 1.2 3.7.6 5.8-.5 1.7-.9 4.9-2.2 5.2-1.4.3-1.4-3.6-3.9-3.6s-2.5 3.9-3.9 3.6c-1.3-.3-1.7-3.5-2.2-5.2-.6-2.1-.9-4.5.6-5.8z" fill="#060a13"/></svg></div><div><b>Örnek Diş Kliniği</b><span>● Hemen yanıt verir</span></div></div>
+          <div class="chat" id="chat">
+            <div class="m in">Merhaba, implant yaptırmak istiyorum. Muayene için ne zaman gelebilirim?</div>
+            <div class="m out">Merhaba! Size hemen yardımcı olayım 😊 Ne yapmak istersiniz?</div>
+            <div class="chips"><span class="chip on">Randevu talebi</span><span class="chip">Tedaviler</span><span class="chip">Konum</span></div>
+            <div class="m out">Adınızı ve telefonunuzu yazar mısınız? Ekibimiz sabah 09:00'da sizi arayacak.</div>
+            <div class="m in">Ayşe Kaya, 0532 ••• •• 18</div>
+          </div>
+        </div>
+        <div class="float f1"><b>&lt; 5 sn</b><span>ilk cevap</span></div>
+        <div class="float f2"><b>7/24</b><span>gece, hafta sonu, bayram</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="marq" aria-label="Hastaların sık sorduğu sorular">
+  <p class="marq-label">Hastaların gece yarısı sorduğu sorular. Hepsine anında cevap.</p>
+  <div class="track" id="t1"></div>
+  <div class="track rev" id="t2"></div>
+</div>
+
+<div class="stats">
+  <div class="wrap rv">
+    <div class="stat"><b><span data-count="24">24</span> saat</b><span>Hiç kapanmayan Instagram resepsiyonu</span></div>
+    <div class="stat"><b>&lt; <span data-count="5">5</span> sn</b><span>Hastaya ilk cevabın gitme süresi</span></div>
+    <div class="stat"><b><span data-count="1">1</span> gün</b><span>Kurulum süresi, sizden iş çıkmaz</span></div>
+    <div class="stat"><b><span data-count="0">0</span> TL</b><span>İlk 2 hafta, kurulum dahil</span></div>
+  </div>
+</div>
+
+<section class="story" id="nasil">
+  <div class="wrap">
+    <div class="story-head rv">
+      <span class="eyebrow">Nasıl çalışır</span>
+      <h2>Gece gelen mesajdan sabahki randevuya.</h2>
+      <p>Hasta yazdığı an asistan devreye girer. Siz sabah kliniği açtığınızda aranacak hastalar listede hazır bekler.</p>
+    </div>
+    <div class="story-grid">
+      <div class="sticky" aria-hidden="true">
+        <div class="scene on" data-scene="0"><div class="box">
+          <div class="mini"><div>Mehmet Y.<br><span>“Cumartesi açık mısınız?”</span></div><span class="pill blue">01:12</span></div>
+          <div class="mini"><div>Zeynep A.<br><span>“Diş beyazlatma ne kadar sürüyor?”</span></div><span class="pill blue">01:38</span></div>
+          <div class="mini"><div>Can Ö.<br><span>“Dişim çok ağrıyor, yarın gelebilir miyim?”</span></div><span class="pill blue">02:05</span></div>
+        </div></div>
+        <div class="scene" data-scene="1"><div class="box">
+          <div class="mini"><div>Asistan<br><span>Çalışma saatleri, tedavi bilgisi ve konum gönderildi</span></div><span class="pill">Yanıtlandı</span></div>
+          <div class="mini"><div>Asistan<br><span>Ad, telefon ve şikâyet alındı</span></div><span class="pill">Kaydedildi</span></div>
+          <div class="mini"><div>Asistan<br><span>“Hekimle görüşmek istiyorum” → ekibe devredildi</span></div><span class="pill blue">Devir</span></div>
+        </div></div>
+        <div class="scene" data-scene="2"><div class="box">
+          <div class="mini"><div><b>Sabah 08:55 · Aranacaklar</b><br><span>Mesai dışında gelen 3 talep</span></div></div>
+          <div class="mini"><div>Can Ö. · Diş ağrısı<br><span>0545 ••• •• 02</span></div><span class="pill">Öncelikli</span></div>
+          <div class="mini"><div>Zeynep A. · Beyazlatma<br><span>0505 ••• •• 71</span></div><span class="pill blue">Ara</span></div>
+        </div></div>
+      </div>
+      <div class="steps">
+        <div class="st on" data-step="0"><span class="n">01 · Hasta yazar</span><h3>Gece, hafta sonu, bayram fark etmez.</h3><p>Hastalar Instagram'dan çoğunlukla mesai dışında yazar. Cevap gelmezse bir sonraki kliniğe geçer.</p>
+          <div class="inline"><div class="mini"><div>Can Ö.<br><span>“Dişim çok ağrıyor, yarın gelebilir miyim?”</span></div><span class="pill blue">02:05</span></div></div></div>
+        <div class="st" data-step="1"><span class="n">02 · Asistan cevaplar</span><h3>Saniyeler içinde, kliniğinizin diliyle.</h3><p>Sık soruları sizin belirlediğiniz cevaplarla yanıtlar, randevu için ad, telefon ve şikâyeti alır. Gerekirse sohbeti size devreder.</p>
+          <div class="inline"><div class="mini"><div>Asistan<br><span>Ad, telefon ve şikâyet alındı</span></div><span class="pill">Kaydedildi</span></div></div></div>
+        <div class="st" data-step="2"><span class="n">03 · Siz ararsınız</span><h3>Sabah liste hazır, tek iş aramak.</h3><p>Talepler düzenli bir liste olarak size ulaşır. Resepsiyon kahvesini alırken arayacağı hastaları bilir.</p>
+          <div class="inline"><div class="mini"><div>Can Ö. · Diş ağrısı<br><span>0545 ••• •• 02</span></div><span class="pill">Öncelikli</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bento-sec" id="ozellik">
+  <div class="wrap">
+    <div class="story-head rv">
+      <span class="eyebrow">Özellikler</span>
+      <h2>Resepsiyonun yükünü alır, hastayı bekletmez.</h2>
+    </div>
+    <div class="bento">
+      <div class="b w3 rv"><div class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="13" rx="2.5" fill="none" stroke="#7fe3ff" stroke-width="1.7"/><path d="M3 8h14M7 2.5v3M13 2.5v3" stroke="#7fe3ff" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3>Randevu talebi toplar</h3><p>Ad, telefon ve hangi tedavi için geldiğini sorar. Size düzenli bir liste olarak ulaşır.</p>
+        <div class="clock" aria-hidden="true"><i style="height:30%"></i><i style="height:55%;animation-delay:-.3s"></i><i style="height:80%;animation-delay:-.6s"></i><i style="height:45%;animation-delay:-.9s"></i><i style="height:70%;animation-delay:-1.2s"></i><i style="height:95%;animation-delay:-1.5s"></i><i style="height:60%;animation-delay:-1.8s"></i><i style="height:40%;animation-delay:-2.1s"></i><i style="height:75%;animation-delay:-.2s"></i><i style="height:50%;animation-delay:-.5s"></i></div></div>
+      <div class="b w3 rv"><div class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3h9A2.5 2.5 0 0 1 17 5.5v6a2.5 2.5 0 0 1-2.5 2.5H9l-4 3v-3h0A2 2 0 0 1 3 12z" fill="none" stroke="#7fe3ff" stroke-width="1.7" stroke-linejoin="round"/></svg></div><h3>Sık soruları yanıtlar</h3><p>Tedaviler, çalışma saatleri, otopark, anlaşmalı kurumlar. Cevapları siz belirlersiniz, asistan sizin yerinize söyler.</p></div>
+      <div class="b rv"><div class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18s6-5.3 6-10a6 6 0 0 0-12 0c0 4.7 6 10 6 10z" fill="none" stroke="#7fe3ff" stroke-width="1.7"/><circle cx="10" cy="8" r="2" fill="#7fe3ff"/></svg></div><h3>Konum gönderir</h3><p>Adres ve harita bağlantısı tek dokunuşla hastada.</p></div>
+      <div class="b rv"><div class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7" cy="7" r="3" fill="none" stroke="#7fe3ff" stroke-width="1.7"/><path d="M2 17c0-3 2.2-5 5-5s5 2 5 5M13 9l2 2 3.5-4" fill="none" stroke="#7fe3ff" stroke-width="1.7" stroke-linecap="round"/></svg></div><h3>Size devreder</h3><p>Hasta bir kişiyle görüşmek isterse sohbet ekibinize geçer.</p></div>
+      <div class="b rv"><div class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l6 2.5v4.5c0 4-2.7 6.8-6 8-3.3-1.2-6-4-6-8V5z" fill="none" stroke="#7fe3ff" stroke-width="1.7" stroke-linejoin="round"/></svg></div><h3>Tıbbi tavsiye vermez</h3><p>Teşhis ya da tedavi önerisi yapmaz, hekime yönlendirir.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="price-sec" id="fiyat">
+  <div class="wrap price-grid">
+    <div class="price-copy rv">
+      <span class="eyebrow">Fiyat</span>
+      <h2>Tek paket. Sürpriz yok.</h2>
+      <p>Ayda tek bir yeni implant ya da ortodonti hastası, ücretin kat kat üzerinde gelir demek.</p>
+      <div class="calc">
+        <div class="row"><span>Ek personel</span><b>Gerekmez</b></div>
+        <div class="row"><span>Program, bilgisayar kurulumu</span><b>Gerekmez</b></div>
+        <div class="row"><span>Sözleşme süresi</span><b>Yok, aylık</b></div>
+      </div>
+    </div>
+    <div class="ring rv">
+      <div class="pcard">
+        <div class="ptop"><h3>Klinik Asistan</h3><span class="offer">İlk 3 kliniğe kurulum ücretsiz</span></div>
+        <div class="amt">1.500 TL <small>+ KDV / ay</small></div>
+        <ul class="plist">
+          <li>2 hafta ücretsiz deneme</li>
+          <li>Kliniğe özel kurulum ve metinler</li>
+          <li>Ayda bir metin ve soru güncellemesi</li>
+          <li>E-posta ile hızlı destek</li>
+          <li>İstediğiniz ay bırakabilirsiniz</li>
+        </ul>
+        <a class="btn btn-w" href="#iletisim">Ücretsiz denemeyi başlat <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq-sec">
+  <div class="wrap">
+    <div class="story-head rv" style="margin-bottom:0"><span class="eyebrow">Sorular</span><h2>Aklınıza takılanlar</h2></div>
+    <div class="faq">
+      <details><summary>Hastalar bir robotla konuştuğunu anlar mı?</summary><p>Asistan kendini kliniğin dijital asistanı olarak tanıtır. Amaç hastayı oyalamak değil, beklemeden ilk cevabı verip bilgilerini almaktır. İsteyen hasta her an ekibinizle görüşebilir.</p></details>
+      <details><summary>Instagram şifremi vermem gerekir mi?</summary><p>Hayır. Bağlantı Instagram'ın resmi izin ekranı üzerinden yapılır. İzni istediğiniz an kaldırabilirsiniz.</p></details>
+      <details><summary>Hasta bilgileri ne oluyor?</summary><p>Toplanan bilgiler yalnızca randevu talebini size iletmek için kullanılır ve üçüncü kişilerle paylaşılmaz. KVKK aydınlatma metniniz varsa sohbete eklenir.</p></details>
+      <details><summary>Fiyat sorulunca ne cevap verir?</summary><p>Sizin belirlediğiniz cevabı verir. Çoğu klinik "fiyat muayene sonrası netleşir" deyip hastayı ön görüşme randevusuna yönlendirmeyi tercih ediyor.</p></details>
+      <details><summary>Deneme bitince ne olur?</summary><p>Devam etmek isterseniz aylık ödemeyle sürer. İstemezseniz asistanı kapatırız, hiçbir ücret çıkmaz.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="iletisim">
+  <div class="wrap rv">
+    <span class="eyebrow">Başlayalım</span>
+    <h2>Bu gece gelen mesajlar <span class="grad">cevapsız kalmasın.</span></h2>
+    <p>Klinik adınızı ve Instagram hesabınızı yazın, aynı gün dönüş yapalım. 2 hafta ücretsiz.</p>
+    <div class="mailbox"><span class="mail" id="mail">info@klinikasistan.com.tr</span><button class="copy" id="copyBtn" type="button">Kopyala</button></div>
+    <a class="btn btn-g" href="https://ig.me/m/ornekdisklinigi.demo" target="_blank" rel="noopener">Önce demoyu deneyin <span class="arr">→</span></a>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>© 2026 Klinik Asistan · Yakup Efe Sari</span><span>klinikasistan.com.tr</span></div></footer>
+
+<script>
+(function(){
+var reduce = false;
+
+/* aurora */
+var cv=document.getElementById('aurora'), cx=cv.getContext('2d');
+function size(){cv.width=Math.max(320,cv.offsetWidth/4);cv.height=Math.max(200,cv.offsetHeight/4)}
+size(); addEventListener('resize',size);
+var blobs=[{c:'107,116,255',x:.2,y:.3,r:.55,s:.00017},{c:'127,227,255',x:.75,y:.25,r:.45,s:.00023},{c:'94,240,184',x:.55,y:.75,r:.4,s:.00019},{c:'122,92,255',x:.9,y:.7,r:.35,s:.00013}];
+function draw(t){
+  cx.clearRect(0,0,cv.width,cv.height);
+  cx.globalCompositeOperation='lighter';
+  blobs.forEach(function(b,i){
+    var x=(b.x+Math.sin(t*b.s+i)*.12)*cv.width, y=(b.y+Math.cos(t*b.s*1.3+i*2)*.1)*cv.height, r=b.r*Math.max(cv.width,cv.height);
+    var g=cx.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,'rgba('+b.c+',.42)'); g.addColorStop(1,'rgba('+b.c+',0)');
+    cx.fillStyle=g; cx.fillRect(0,0,cv.width,cv.height);
+  });
+  if(!reduce) requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+/* phone tilt follows pointer */
+var stage=document.getElementById('stage'), phone=document.getElementById('phone');
+if(!reduce && matchMedia('(pointer:fine)').matches){
+  stage.addEventListener('mousemove',function(e){var r=stage.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;phone.style.transform='rotateY('+(px*22-6)+'deg) rotateX('+(-py*16+4)+'deg)'});
+  stage.addEventListener('mouseleave',function(){phone.style.transform=''});
+}
+
+/* live chat loop */
+var chat=document.getElementById('chat'), toast=document.getElementById('toast'), pclock=document.getElementById('pclock'), now=document.getElementById('now');
+var convos=[
+  {t:'23:41',name:'Ayşe K. · İmplant · 0532 ••• •• 18',s:[['in','Merhaba, implant yaptırmak istiyorum. Muayene için ne zaman gelebilirim?'],['out','Merhaba! Size hemen yardımcı olayım 😊 Ne yapmak istersiniz?'],['chips',0],['out','Adınızı ve telefonunuzu yazar mısınız? Ekibimiz sabah 09:00\'da sizi arayacak.'],['in','Ayşe Kaya, 0532 ••• •• 18'],['out','Teşekkürler Ayşe Hanım, talebiniz alındı ✅']]},
+  {t:'01:07',name:'Murat D. · Diş ağrısı · 0545 ••• •• 02',s:[['in','Dişim çok ağrıyor yarın sabah gelebilir miyim?'],['out','Geçmiş olsun 🙏 Acil durumlar için sabah ilk saatlere öncelik veriyoruz.'],['chips',0],['out','Adınızı ve telefonunuzu bırakırsanız 09:00\'da ilk sizi arayacağız.'],['in','Murat Demir 0545 ••• •• 02'],['out','Kaydınızı aldım, sabah görüşmek üzere ✅']]},
+  {t:'22:18',name:'Elif S. · Konum soruldu',s:[['in','Kliniğiniz tam olarak nerede? Otopark var mı?'],['out','Hemen göndereyim 📍'],['chips',2],['out','Adres ve harita bağlantısı yukarıda. Binanın önünde ücretsiz otopark var.'],['in','Süper, teşekkürler!'],['out','Rica ederiz, randevu isterseniz yazmanız yeterli 😊']]}
+];
+function el(cls,txt){var d=document.createElement('div');d.className=cls;if(txt)d.textContent=txt;return d}
+function chips(on){var w=el('chips');['Randevu talebi','Tedaviler','Konum'].forEach(function(c,i){var s=document.createElement('span');s.className='chip';s.textContent=c;w.appendChild(s);if(i===on)setTimeout(function(){s.classList.add('on')},700)});return w}
+function add(node){chat.appendChild(node);while(chat.children.length>7)chat.removeChild(chat.firstChild)}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function run(){
+  var k=0;
+  while(true){
+    var c=convos[k%convos.length]; k++;
+    chat.innerHTML=''; pclock.textContent=c.t; now.textContent=c.t; toast.classList.remove('show');
+    toast.querySelector('span').textContent=c.name;
+    await wait(700);
+    for(var i=0;i<c.s.length;i++){
+      var st=c.s[i];
+      if(st[0]==='chips'){add(chips(st[1]));await wait(1300);continue}
+      if(st[0]==='out'){var ty=el('typing');ty.innerHTML='<i></i><i></i><i></i>';add(ty);await wait(900);ty.remove()}
+      add(el('m '+st[0],st[1]));
+      await wait(st[0]==='in'?1500:1100);
+    }
+    toast.classList.add('show');
+    await wait(3200);
+  }
+}
+if(!reduce) run();
+
+/* marquee */
+var qs=[['Cumartesi açık mısınız?','00:12'],['İmplant fiyatı ne kadar?','23:48'],['Diş beyazlatma kaç seans?','01:30'],['Çocuğuma kontrol randevusu alabilir miyim?','22:05'],['Anlaşmalı olduğunuz kurumlar hangileri?','21:40'],['Dişim çok ağrıyor, yarın gelebilir miyim?','02:14'],['Şeffaf plak tedavisi yapıyor musunuz?','23:02'],['Otopark var mı?','20:51'],['Kanal tedavisi kaç gün sürer?','00:47'],['Taksit yapıyor musunuz?','22:33']];
+function fill(id,list){var t=document.getElementById(id),h='';list.concat(list).forEach(function(q){h+='<span class="q">'+q[0]+'<em>'+q[1]+'</em></span>'});t.innerHTML=h}
+fill('t1',qs); fill('t2',qs.slice(5).concat(qs.slice(0,5)));
+
+/* scroll story */
+var steps=[].slice.call(document.querySelectorAll('.st')), scenes=[].slice.call(document.querySelectorAll('.scene'));
+if('IntersectionObserver' in window){
+  var so=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var n=+e.target.dataset.step;steps.forEach(function(s,i){s.classList.toggle('on',i===n)});scenes.forEach(function(s,i){s.classList.toggle('on',i===n)})}})},{rootMargin:'-45% 0px -45% 0px'});
+  steps.forEach(function(s){so.observe(s)});
+
+  /* reveal: only elements below the fold get a start offset */
+  var rv=[].slice.call(document.querySelectorAll('.rv'));
+  if(!reduce){
+    rv.forEach(function(r){if(r.getBoundingClientRect().top>innerHeight)r.classList.add('pre')});
+    var ro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('pre');ro.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px'});
+    rv.forEach(function(r){ro.observe(r)});
+  }
+
+  /* counters */
+  var co=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;co.unobserve(e.target);var end=+e.target.dataset.count;if(reduce||end===0)return;var t0=performance.now();(function step(t){var p=Math.min(1,(t-t0)/1100);e.target.textContent=Math.round(end*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)})(t0)})},{threshold:.6});
+  document.querySelectorAll('[data-count]').forEach(function(c){co.observe(c)});
+}
+
+/* spotlight on bento */
+document.querySelectorAll('.b').forEach(function(b){b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();b.style.setProperty('--x',(e.clientX-r.left)+'px');b.style.setProperty('--y',(e.clientY-r.top)+'px')})});
+
+/* copy */
+document.getElementById('copyBtn').addEventListener('click',function(){
+  var b=this, m=document.getElementById('mail');
+  function done(){b.textContent='Kopyalandı';setTimeout(function(){b.textContent='Kopyala'},1800)}
+  function fb(){var r=document.createRange();r.selectNodeContents(m);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Seçildi'}
+  try{navigator.clipboard.writeText(m.textContent).then(done,fb)}catch(e){fb()}
+});
+})();
+</script>
+</body>
+</html>
